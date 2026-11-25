@@ -1,0 +1,17 @@
+name: Build Aura APK
+on: { push: { branches: [main] }, workflow_dispatch: {} }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: if [ -f AuraMusic.zip ]; then unzip -o -q AuraMusic.zip; fi
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.9' }
+      - run: gradle assembleRelease --no-daemon
+      - run: cp app/build/outputs/apk/release/app-release.apk Aura-Music.apk
+      - uses: actions/upload-artifact@v4
+        with: { name: Aura-Music-APK, path: Aura-Music.apk }
